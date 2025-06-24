@@ -1,15 +1,33 @@
 import axios from "axios";
 import { SearchParams, Airport, Flight } from "../types";
 
+// ===== API CONFIGURATION =====
+// Set to false to use only mock data (no API calls)
+const ENABLE_API_CALLS = true;
+
+// Set to true to prefer mock data over API when available
+const PREFER_MOCK_DATA = true;
+
+// Minimum characters before making API calls (higher = fewer calls)
+const MIN_SEARCH_LENGTH = 3;
+
+// Cache duration for airport searches (10 minutes)
+const CACHE_DURATION = 10 * 60 * 1000;
+
+// Function to update API key easily
+export const updateApiKey = (newApiKey: string) => {
+  api.defaults.headers["X-RapidAPI-Key"] = newApiKey;
+};
+
 const api = axios.create({
   baseURL: "https://sky-scrapper.p.rapidapi.com/api/v1",
   headers: {
-    "X-RapidAPI-Key": "0d38e68f2fmsh897acf006969a6cp12ffb6jsnff5bb76bfc6e",
+    "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
     "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
   },
 });
 
-// Fallback mock airports in case API fails
+// Enhanced mock airports for better fallback coverage
 const mockAirports: Airport[] = [
   {
     code: "KHI",
@@ -81,20 +99,107 @@ const mockAirports: Airport[] = [
     lat: 1.3644,
     lng: 103.9915,
   },
+  {
+    code: "JFK",
+    name: "John F. Kennedy International Airport",
+    city: "New York",
+    country: "United States",
+    displayCode: "JFK",
+    entityId: "JFK",
+    lat: 40.6413,
+    lng: -73.7781,
+  },
+  {
+    code: "LAX",
+    name: "Los Angeles International Airport",
+    city: "Los Angeles",
+    country: "United States",
+    displayCode: "LAX",
+    entityId: "LAX",
+    lat: 33.9425,
+    lng: -118.4081,
+  },
+  {
+    code: "ORD",
+    name: "O'Hare International Airport",
+    city: "Chicago",
+    country: "United States",
+    displayCode: "ORD",
+    entityId: "ORD",
+    lat: 41.9742,
+    lng: -87.9073,
+  },
+  {
+    code: "NRT",
+    name: "Narita International Airport",
+    city: "Tokyo",
+    country: "Japan",
+    displayCode: "NRT",
+    entityId: "NRT",
+    lat: 35.7763,
+    lng: 140.387,
+  },
+  {
+    code: "ICN",
+    name: "Incheon International Airport",
+    city: "Seoul",
+    country: "South Korea",
+    displayCode: "ICN",
+    entityId: "ICN",
+    lat: 37.4602,
+    lng: 126.4407,
+  },
 ];
 
+// In-memory cache to reduce API calls
+const airportSearchCache = new Map<
+  string,
+  { data: Airport[]; timestamp: number }
+>();
+
 export const searchAirports = async (query: string): Promise<Airport[]> => {
-  if (!query || query.length < 2) {
+  if (!query || query.length < MIN_SEARCH_LENGTH) {
     return [];
   }
 
+  // Check cache first
+  const cacheKey = query.toLowerCase();
+  const cached = airportSearchCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log("Returning cached airport results for:", query);
+    return cached.data;
+  }
+
+  // Filter mock data first - if we get good results, use them instead of API
+  const lowerQuery = query.toLowerCase();
+  const mockResults = mockAirports.filter(
+    (airport) =>
+      airport.name.toLowerCase().includes(lowerQuery) ||
+      airport.city.toLowerCase().includes(lowerQuery) ||
+      airport.code.toLowerCase().includes(lowerQuery)
+  );
+
+  // If we have good mock results or prefer mock data, use them instead of making API call
+  if (mockResults.length >= 3 || PREFER_MOCK_DATA) {
+    console.log("Using mock data for airport search:", query);
+    // Cache the mock results
+    airportSearchCache.set(cacheKey, {
+      data: mockResults,
+      timestamp: Date.now(),
+    });
+    return mockResults;
+  }
+
+  // Only make API call if we don't have good mock results and not preferring mock data
   try {
+    console.log("Making API call for airport search:", query);
     const response = await api.get("/flights/searchAirport", {
       params: { query },
     });
 
+    let apiResults: Airport[] = [];
     if (response.data?.data && Array.isArray(response.data.data)) {
-      return response.data.data.map((airport: any) => ({
+      apiResults = response.data.data.map((airport: any) => ({
         code: airport.skyId || airport.iata || airport.code,
         name: airport.presentation?.title || airport.name,
         city: airport.presentation?.subtitle || airport.city,
@@ -109,28 +214,21 @@ export const searchAirports = async (query: string): Promise<Airport[]> => {
       }));
     }
 
-    // If API response is empty or invalid, fall back to mock filtering
-    console.warn("API returned invalid data, falling back to mock airports");
-    const lowerQuery = query.toLowerCase();
-    return mockAirports.filter(
-      (airport) =>
-        airport.name.toLowerCase().includes(lowerQuery) ||
-        airport.city.toLowerCase().includes(lowerQuery) ||
-        airport.code.toLowerCase().includes(lowerQuery)
-    );
+    // Combine API results with mock results and cache
+    const combinedResults = [...apiResults, ...mockResults];
+    airportSearchCache.set(cacheKey, {
+      data: combinedResults,
+      timestamp: Date.now(),
+    });
+    return combinedResults;
   } catch (error) {
-    console.error(
-      "Error searching airports via API, falling back to mock data:",
-      error
-    );
-    // Fallback to mock data filtering when API fails
-    const lowerQuery = query.toLowerCase();
-    return mockAirports.filter(
-      (airport) =>
-        airport.name.toLowerCase().includes(lowerQuery) ||
-        airport.city.toLowerCase().includes(lowerQuery) ||
-        airport.code.toLowerCase().includes(lowerQuery)
-    );
+    console.error("Error searching airports via API, using mock data:", error);
+    // Cache mock results even on API failure
+    airportSearchCache.set(cacheKey, {
+      data: mockResults,
+      timestamp: Date.now(),
+    });
+    return mockResults;
   }
 };
 
