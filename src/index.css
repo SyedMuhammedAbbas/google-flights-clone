@@ -540,3 +540,26 @@ code {
   bottom: 0;
   z-index: 5;
 }
+
+/* Scrollbar hiding utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive utilities */
+@media (max-width: 639px) {
+  /* .flights-logo {
+    width: 64px !important;
+    height: 64px !important;
+  } */
+
+  .heading-flights {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+}

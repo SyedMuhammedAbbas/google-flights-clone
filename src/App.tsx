@@ -26,7 +26,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="App bg-[#202124] min-h-screen">
-      <div className="max-w-[1200px] mx-auto px-6 py-8">
+      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         <div className="text-center">
           <img src={flightsHero} alt="Flights" className="flights-logo" />
           <h1 className="heading-flights mb-8">Flights</h1>
@@ -34,13 +34,13 @@ export const App: React.FC = () => {
         </div>
 
         {hasSearched && searchParams.origin && searchParams.destination && (
-          <>
-            <FlightMap
+          <div className="mt-6 sm:mt-8 lg:mt-10 space-y-4 sm:space-y-6">
+            {/* <FlightMap
               originAirport={searchParams.origin}
               destinationAirport={searchParams.destination}
-            />
+            /> */}
             <FlightResults flights={searchParams.flights || []} />
-          </>
+          </div>
         )}
       </div>
     </div>

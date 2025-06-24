@@ -12,8 +12,8 @@ export const FlightMap: React.FC<Props> = ({
 }) => {
   if (!originAirport || !destinationAirport) {
     return (
-      <div className="w-full h-[300px] rounded-2xl bg-[#303134] flex items-center justify-center mb-8">
-        <div className="text-[#9aa0a6]">
+      <div className="w-full h-[200px] sm:h-[250px] lg:h-[300px] rounded-xl sm:rounded-2xl bg-[#303134] flex items-center justify-center mb-4 sm:mb-6 lg:mb-8">
+        <div className="text-[#9aa0a6] text-sm sm:text-base text-center px-4">
           Select origin and destination to view route
         </div>
       </div>
@@ -64,25 +64,33 @@ export const FlightMap: React.FC<Props> = ({
   );
 
   return (
-    <div className="w-full mb-8">
-      <div className="bg-[#303134] rounded-2xl p-6">
-        <div className="mb-4">
-          <h3 className="text-[#e8eaed] text-lg font-medium mb-2">
+    <div className="w-full mb-4 sm:mb-6 lg:mb-8">
+      <div className="bg-[#303134] rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-[#e8eaed] text-base sm:text-lg lg:text-xl font-medium mb-1 sm:mb-2">
             Flight Route
           </h3>
-          <p className="text-[#9aa0a6] text-sm">
-            {originAirport.city} ({originAirport.code}) →{" "}
-            {destinationAirport.city} ({destinationAirport.code})
-          </p>
-          <p className="text-[#9aa0a6] text-sm">Distance: ~{distance} km</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
+            <p className="text-[#9aa0a6] text-xs sm:text-sm lg:text-base">
+              <span className="font-medium">{originAirport.city}</span>
+              <span className="mx-1">({originAirport.code})</span>
+              <span className="mx-2">→</span>
+              <span className="font-medium">{destinationAirport.city}</span>
+              <span className="mx-1">({destinationAirport.code})</span>
+            </p>
+            <p className="text-[#9aa0a6] text-xs sm:text-sm whitespace-nowrap">
+              Distance: ~{distance.toLocaleString()} km
+            </p>
+          </div>
         </div>
 
-        <div className="relative w-full h-[300px] bg-[#1f1f1f] rounded-xl overflow-hidden">
+        <div className="relative w-full h-[200px] sm:h-[250px] lg:h-[300px] bg-[#1f1f1f] rounded-lg sm:rounded-xl overflow-hidden">
           <svg
             width="100%"
             height="100%"
             viewBox="0 0 800 400"
             className="absolute inset-0"
+            preserveAspectRatio="xMidYMid meet"
           >
             {/* World map outline (simplified) */}
             <defs>
@@ -119,18 +127,19 @@ export const FlightMap: React.FC<Props> = ({
             <circle
               cx={origin.x}
               cy={origin.y}
-              r="8"
+              r="6"
               fill="#34a853"
               stroke="#ffffff"
               strokeWidth="2"
             />
             <text
               x={origin.x}
-              y={origin.y - 15}
+              y={origin.y - 12}
               textAnchor="middle"
               fill="#e8eaed"
-              fontSize="12"
+              fontSize="10"
               fontWeight="bold"
+              className="select-none"
             >
               {originAirport.code}
             </text>
@@ -139,18 +148,19 @@ export const FlightMap: React.FC<Props> = ({
             <circle
               cx={destination.x}
               cy={destination.y}
-              r="8"
+              r="6"
               fill="#ea4335"
               stroke="#ffffff"
               strokeWidth="2"
             />
             <text
               x={destination.x}
-              y={destination.y - 15}
+              y={destination.y - 12}
               textAnchor="middle"
               fill="#e8eaed"
-              fontSize="12"
+              fontSize="10"
               fontWeight="bold"
+              className="select-none"
             >
               {destinationAirport.code}
             </text>
@@ -162,9 +172,10 @@ export const FlightMap: React.FC<Props> = ({
               })`}
             >
               <path
-                d="M0,-6 L-2,-4 L-6,-4 L-6,-2 L-2,-2 L0,0 L2,-2 L6,-2 L6,-4 L2,-4 Z"
+                d="M0,-4 L-1.5,-3 L-4,-3 L-4,-1.5 L-1.5,-1.5 L0,0 L1.5,-1.5 L4,-1.5 L4,-3 L1.5,-3 Z"
                 fill="#8ab4f8"
                 transform="rotate(45)"
+                className="select-none"
               />
             </g>
           </svg>

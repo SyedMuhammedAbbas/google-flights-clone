@@ -27,64 +27,83 @@ export const FlightCard: React.FC<Props> = ({ flight }) => {
   if (!isExpanded) {
     return (
       <div className="border-b border-[#5f6368] hover:bg-[#303134] transition-colors">
-        <div className="px-6 py-4">
-          <div className="flex items-center">
-            <div className="w-24">
+        <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            {/* Airline Logo */}
+            <div className="w-16 sm:w-20 lg:w-24 flex-shrink-0">
               <img
                 src={firstSegment.carrier.logo}
                 alt={firstSegment.carrier.name}
-                className="h-8"
+                className="h-6 sm:h-7 lg:h-8 w-auto object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                  target.nextElementSibling!.textContent =
+                    firstSegment.carrier.code;
+                }}
               />
+              <div className="text-[#9aa0a6] text-xs sm:text-sm font-medium hidden"></div>
             </div>
-            <div className="flex-1">
-              <div className="flex items-center">
-                <div className="flex flex-col">
-                  <span className="text-[#e8eaed] text-lg">
+
+            {/* Flight Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                {/* Departure */}
+                <div className="flex flex-col sm:min-w-0 sm:flex-shrink-0">
+                  <span className="text-[#e8eaed] text-base sm:text-lg font-medium">
                     {formatTime(firstSegment.departure.time)}
                   </span>
-                  <span className="text-[#9aa0a6] text-sm">
+                  <span className="text-[#9aa0a6] text-xs sm:text-sm">
                     {firstSegment.departure.airport.code}
                   </span>
                 </div>
-                <div className="flex flex-col items-center flex-1">
-                  <div className="text-[#9aa0a6] text-sm">
+
+                {/* Flight Info */}
+                <div className="flex flex-col items-start sm:items-center flex-1 min-w-0">
+                  <div className="text-[#9aa0a6] text-xs sm:text-sm">
                     {formatDuration(flight.totalDuration)}
                   </div>
-                  <div className="text-[#9aa0a6] text-sm">
+                  <div className="text-[#9aa0a6] text-xs sm:text-sm">
                     {flight.stops === 0
                       ? "Nonstop"
                       : `${flight.stops} ${
                           flight.stops === 1 ? "stop" : "stops"
                         }`}
                   </div>
-                  <div className="text-[#9aa0a6] text-sm">
+                  <div className="text-[#9aa0a6] text-xs sm:text-sm truncate w-full sm:text-center">
                     {firstSegment.carrier.name} {firstSegment.flightNumber}
                     {flight.segments.length > 1 && (
                       <>
-                        <span className="mx-1 text-[#9aa0a6]">•</span>
-                        <span className="text-[#9aa0a6] text-sm">
+                        <span className="mx-1 text-[#9aa0a6] hidden sm:inline">
+                          •
+                        </span>
+                        <span className="block sm:inline text-[#9aa0a6] text-xs sm:text-sm">
                           {lastSegment.carrier.name} {lastSegment.flightNumber}
                         </span>
                       </>
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-[#e8eaed] text-lg">
+
+                {/* Arrival */}
+                <div className="flex flex-col sm:items-end sm:min-w-0 sm:flex-shrink-0">
+                  <span className="text-[#e8eaed] text-base sm:text-lg font-medium">
                     {formatTime(lastSegment.arrival.time)}
                   </span>
-                  <span className="text-[#9aa0a6] text-sm">
+                  <span className="text-[#9aa0a6] text-xs sm:text-sm">
                     {lastSegment.arrival.airport.code}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="w-48 text-right">
-              <div className="text-[#e8eaed] text-lg">
+
+            {/* Price */}
+            <div className="flex justify-between items-center sm:flex-col sm:items-end sm:w-32 lg:w-40 sm:text-right flex-shrink-0">
+              <div className="text-[#e8eaed] text-lg sm:text-xl lg:text-2xl font-medium">
                 ${flight.price.amount.toLocaleString()}
               </div>
-              <div className="text-[#9aa0a6] text-sm">
-                {flight.bookingAgency?.name}
+              <div className="text-[#9aa0a6] text-xs sm:text-sm">
+                {flight.bookingAgency?.name || "Book now"}
               </div>
             </div>
           </div>
@@ -95,40 +114,53 @@ export const FlightCard: React.FC<Props> = ({ flight }) => {
 
   return (
     <div className="border-b border-[#5f6368] bg-[#303134]">
-      <div className="px-6 py-4">
-        <div className="flex items-start">
-          <div className="w-24">
+      <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-3 lg:gap-4">
+          {/* Airline Logo */}
+          <div className="w-16 sm:w-20 lg:w-24 flex-shrink-0">
             <img
               src={firstSegment.carrier.logo}
               alt={firstSegment.carrier.name}
-              className="h-8"
+              className="h-6 sm:h-7 lg:h-8 w-auto object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+                target.nextElementSibling!.textContent =
+                  firstSegment.carrier.code;
+              }}
             />
+            <div className="text-[#9aa0a6] text-xs sm:text-sm font-medium hidden"></div>
           </div>
-          <div className="flex-1">
-            <div className="flex items-start">
-              <div>
-                <div className="text-[#e8eaed] text-lg">
+
+          {/* Expanded Flight Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+              {/* Departure Details */}
+              <div className="flex-1">
+                <div className="text-[#e8eaed] text-lg sm:text-xl font-medium">
                   {formatTime(firstSegment.departure.time)}
                 </div>
                 <div className="text-[#9aa0a6] text-sm">
                   {firstSegment.departure.airport.code}
                 </div>
-                <div className="text-[#9aa0a6] text-sm mt-1">
+                <div className="text-[#9aa0a6] text-xs sm:text-sm mt-1 break-words">
                   {firstSegment.departure.airport.name}
                 </div>
               </div>
-              <div className="flex-1">
-                <div className="text-center text-[#9aa0a6] text-sm">
+
+              {/* Flight Path */}
+              <div className="flex-1 text-center hidden sm:block">
+                <div className="text-[#9aa0a6] text-sm">
                   {formatDuration(flight.totalDuration)}
                 </div>
-                <div className="text-center text-[#9aa0a6] text-sm">
+                <div className="text-[#9aa0a6] text-sm">
                   {flight.stops === 0
                     ? "Nonstop"
                     : `${flight.stops} ${
                         flight.stops === 1 ? "stop" : "stops"
                       }`}
                 </div>
-                <div className="text-[#9aa0a6] text-sm mt-1">
+                <div className="text-[#9aa0a6] text-xs sm:text-sm mt-1">
                   {firstSegment.carrier.name} {firstSegment.flightNumber}
                   {flight.segments.length > 1 && (
                     <>
@@ -138,39 +170,63 @@ export const FlightCard: React.FC<Props> = ({ flight }) => {
                   )}
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-[#e8eaed] text-lg">
+
+              {/* Arrival Details */}
+              <div className="flex-1 sm:text-right">
+                <div className="text-[#e8eaed] text-lg sm:text-xl font-medium">
                   {formatTime(lastSegment.arrival.time)}
                 </div>
                 <div className="text-[#9aa0a6] text-sm">
                   {lastSegment.arrival.airport.code}
                 </div>
-                <div className="text-[#9aa0a6] text-sm mt-1">
+                <div className="text-[#9aa0a6] text-xs sm:text-sm mt-1 break-words">
                   {lastSegment.arrival.airport.name}
                 </div>
               </div>
             </div>
+
+            {/* Mobile Flight Path Info */}
+            <div className="sm:hidden mt-3 pt-3 border-t border-[#5f6368]">
+              <div className="text-[#9aa0a6] text-sm">
+                Duration: {formatDuration(flight.totalDuration)} •{" "}
+                {flight.stops === 0
+                  ? "Nonstop"
+                  : `${flight.stops} ${flight.stops === 1 ? "stop" : "stops"}`}
+              </div>
+              <div className="text-[#9aa0a6] text-xs mt-1">
+                {firstSegment.carrier.name} {firstSegment.flightNumber}
+                {flight.segments.length > 1 && (
+                  <>
+                    {" • "}
+                    {lastSegment.carrier.name} {lastSegment.flightNumber}
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="w-48 text-right">
-            <div className="text-[#e8eaed] text-lg">
+
+          {/* Price Section */}
+          <div className="flex justify-between items-center lg:flex-col lg:items-end lg:w-32 xl:w-40 lg:text-right flex-shrink-0">
+            <div className="text-[#e8eaed] text-lg sm:text-xl lg:text-2xl font-medium">
               ${flight.price.amount.toLocaleString()}
             </div>
-            <div className="text-[#9aa0a6] text-sm">
-              {flight.bookingAgency?.name}
+            <div className="text-[#9aa0a6] text-xs sm:text-sm">
+              {flight.bookingAgency?.name || "Book now"}
             </div>
           </div>
         </div>
       </div>
-      <div className="border-t border-[#5f6368] px-6 py-2 flex items-center justify-between">
-        <div className="text-[#9aa0a6] text-sm">
+
+      {/* Footer */}
+      <div className="border-t border-[#5f6368] px-3 sm:px-4 lg:px-6 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="text-[#9aa0a6] text-xs sm:text-sm">
           {flight.aircraft?.model} • {flight.cabinClass}
         </div>
-        <button className="text-[#8ab4f8]">
-          {isExpanded ? (
-            <span onClick={() => setIsExpanded(false)}>Show less</span>
-          ) : (
-            <span onClick={() => setIsExpanded(true)}>Show more</span>
-          )}
+        <button
+          className="text-[#8ab4f8] text-sm font-medium hover:underline text-left sm:text-right"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {isExpanded ? "Show less" : "Show more"}
         </button>
       </div>
     </div>
